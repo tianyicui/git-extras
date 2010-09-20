@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+tmp_file=$(mktemp $(dirname $1)/XXXXX)
+sed "s/pick to_be_git_reword/edit to_be_git_reword/g" $1 >$tmp_file
+if cmp $1 $tmp_file 2>/dev/null; then
+	echo "fatal: cannot reword a commit not in current branch"
+	exit 1
+fi
+mv $tmp_file $1

@@ -30,6 +30,7 @@ Brew:
  - git undo
  - git update-extras
  - git setup
+ - git reword
 
 ## git-contrib
 
@@ -245,3 +246,9 @@ Remove the latest 3 commits:
 ## git-setup [dir]
 
 Set up a git repository if one doesn't exist, add all files and make an initial commit. _dir_ defaults to the current working directory.
+
+## git-reword [commit]
+
+Open an editor to edit the commit message. If no commit provided, it will let you reword HEAD.
+
+Internally, it will call `git rebase -i commit^`, so it has the side effect of rebase.

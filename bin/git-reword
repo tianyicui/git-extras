@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+	git commit --amend
+	exit 0
+fi
+
+to_reword==`git rev-parse $1 | cut -b 1-7`
+editor=`mktemp /tmp/XXXXXXX`
+cat $(dirname $0)"/__editor_used_by_git-reword" | sed s/to_be_git_reword/$to_reword/g >$editor
+chmod +x $editor
+
+to_rebase=`git rev-parse $1^`
+if [ $? != 0 ]; then
+	# FIXME: this can be solved using the way in https://git.wiki.kernel.org/index.php/GitFaq#How_do_I_edit_the_root_commit.3F
+	echo "fatal: cannot reword commit with no parent"
+	exit 1
+fi
+
+if [ x"`echo`" = x"`git show --name-only $1 | tail -n 1`" ]; then
+	# if the last line of that output is an empty line, then it has no changed file, so it won't be in the list of git rebase -i.
+	# FIXME: how can we reword it?
+	echo "fatal: cannot reword commit which introduced no changed file, e.g. a merge commit"
+	exit 2
+fi
+
+GIT_EDITOR=$editor git rebase -i $to_rebase || exit 1
+git commit --amend
+option='--continue'
+[ $? != 0 ] && option='--abort'
+git rebase $option

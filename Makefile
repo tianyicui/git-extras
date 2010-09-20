@@ -1,6 +1,6 @@
 
 PREFIX ?= /usr/local
-BINS = $(wildcard bin/git-*)
+BINS = $(wildcard bin/*)
 
 install:
 	@echo "... installing to $(PREFIX)/bin"
